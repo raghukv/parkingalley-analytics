@@ -7,12 +7,18 @@ import com.amazonaws.regions.Regions;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.s3.model.GetObjectRequest;
+import com.amazonaws.services.s3.model.PutObjectRequest;
+import com.amazonaws.services.s3.model.S3Object;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Calendar;
 
 import com.parkingalley.parkingalleyanalytics.model.ParkingLog;
+import org.joda.time.DateTime;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -44,28 +50,48 @@ public class AnalyticsService {
     }
 
     public boolean appendParkingLog2(ParkingLog parkingLog){
-        AWSCredentials credentials = new BasicAWSCredentials(
-                "<AWS accesskey>",
-                "<AWS secretkey>"
-        );
 
         AmazonS3 s3client = AmazonS3ClientBuilder
                 .standard()
-                .withCredentials(new AWSStaticCredentialsProvider(credentials))
-                .withRegion(Regions.DEFAULT_REGION)
+                .withCredentials(new AWSStaticCredentialsProvider(new BasicAWSCredentials(
+                        getAK(),
+                        getSK()
+                )))
+                .withRegion(Regions.AP_SOUTH_1)
                 .build();
 
         String bucketName = getBucket();
+        String fileName = getFileName();
 
         if(s3client.doesBucketExistV2(bucketName)){
-            GetObjectRequest getObject = new GetObjectRequest();
-            getObject.
+            GetObjectRequest getObject = new GetObjectRequest(getBucket(), fileName);
+            if(s3client.doesObjectExist(bucketName, fileName)){
+                S3Object obj = s3client.getObject(getObject);
+            }else{
+//                PutObjectRequest putObject = new PutObjectRequest();
+            }
         }
     return false;
     }
 
+    private String getFileName() {
+        return "ankur_kothapet_" + getToday();
+    }
+
     private String getBucket(){
         return this.S3.split("//")[0];
+    }
+
+    private String getToday(){
+        LocalDateTime now = LocalDateTime.now();
+
+        // Print the current date and time
+        System.out.println("Current Date and Time: " + now);
+
+        // If you want to print the date and time in a specific format
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+        String formattedDateTime = now.format(formatter);
+        return formattedDateTime;
     }
 
     private String getAK(){

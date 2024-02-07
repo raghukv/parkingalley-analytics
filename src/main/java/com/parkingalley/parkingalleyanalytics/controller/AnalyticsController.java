@@ -4,11 +4,9 @@ import com.parkingalley.parkingalleyanalytics.model.ParkingLog;
 import com.parkingalley.parkingalleyanalytics.model.ResponseDetails;
 import com.parkingalley.parkingalleyanalytics.service.AnalyticsService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/openapi")
@@ -19,6 +17,13 @@ public class AnalyticsController {
 
     private int SUCCESS = 1;
     private int FAIL = 1;
+
+    @GetMapping("/test")
+    public ResponseEntity<String> test(){
+        service.appendParkingLog2(null);
+        return new ResponseEntity<>(HttpStatusCode.valueOf(200));
+    }
+
 
     @PostMapping("/uploadParkingLog")
     public ResponseEntity<ResponseDetails> uploadParkingLog(@RequestBody ParkingLog parkingDetails) {
