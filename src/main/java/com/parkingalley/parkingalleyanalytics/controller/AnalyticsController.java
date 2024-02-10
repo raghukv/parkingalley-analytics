@@ -20,22 +20,25 @@ public class AnalyticsController {
 
     @GetMapping("/test")
     public ResponseEntity<String> test(){
-        service.appendParkingLog2(null);
+        service.appendParkingLog(null);
         return new ResponseEntity<>(HttpStatusCode.valueOf(200));
     }
 
+    @GetMapping("/testcreate")
+    public ResponseEntity<String> testcreate(){
+        String s = service.createTestFile();
+        return new ResponseEntity<>(s, HttpStatusCode.valueOf(200));
+    }
 
     @PostMapping("/uploadParkingLog")
     public ResponseEntity<ResponseDetails> uploadParkingLog(@RequestBody ParkingLog parkingDetails) {
 
         parkingDetails.setCaptured_time(System.currentTimeMillis());
 
-        ResponseDetails responseDetails;
+        ResponseDetails responseDetails = new ResponseDetails(1, "");
 
-        if (parkingDetails != null && service.appendParkingLog(parkingDetails)) {
-            responseDetails = new ResponseDetails(SUCCESS, "");
-        } else {
-            responseDetails = new ResponseDetails(FAIL, "Failed to upload parking log.");
+        if (parkingDetails != null) {
+            service.appendParkingLog(parkingDetails);
         }
         return ResponseEntity.ok(responseDetails);
     }

@@ -8,49 +8,34 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.s3.model.GetObjectRequest;
 import com.amazonaws.services.s3.model.PutObjectRequest;
+import com.amazonaws.services.s3.model.PutObjectResult;
 import com.amazonaws.services.s3.model.S3Object;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.io.BufferedWriter;
-import java.io.FileWriter;
-import java.io.IOException;
+
+import java.io.*;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
+import java.util.stream.Collectors;
 
 import com.parkingalley.parkingalleyanalytics.model.ParkingLog;
 import org.joda.time.DateTime;
 import org.springframework.stereotype.Service;
+import software.amazon.awssdk.core.ResponseBytes;
+import software.amazon.awssdk.core.ResponseInputStream;
+import software.amazon.awssdk.core.sync.RequestBody;
+import software.amazon.awssdk.services.s3.model.GetObjectResponse;
 
 @Service
 public class AnalyticsService {
 
-    private static final String FILE_PATH = "path/to/your/logfile.txt"; // specify your file path
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
 
     private static final String S3 = "patd-h1//AKIAZI2LD5LJ4FE3W5M2//PV8cXBJgf+dLuxVJ+ZU4TB1dvgioHJc2Iq1e3oTt";
 
-    public boolean appendParkingLog(ParkingLog parkingDetails) {
-//        ObjectMapper objectMapper = new ObjectMapper();
-        try {
-            // Convert ParkingDetails object to JSON string
-//            String parkingDetailsJson = objectMapper.writeValueAsString(parkingDetails);
-              String parkingDetailsRow = parkingDetails.buildRow();
-            // Append the JSON string to the file in a new line
-            BufferedWriter writer = new BufferedWriter(new FileWriter(FILE_PATH, true));
-            writer.append(parkingDetailsRow);
-            writer.newLine();
-            writer.close();
-            return true;
 
-        } catch (IOException e) {
-            e.printStackTrace();
-            return false;
-        } finally {
-
-        }
-    }
-
-    public boolean appendParkingLog2(ParkingLog parkingLog){
-
+    public String appendParkingLog(ParkingLog parkingLog){
+        String response = null;
         AmazonS3 s3client = AmazonS3ClientBuilder
                 .standard()
                 .withCredentials(new AWSStaticCredentialsProvider(new BasicAWSCredentials(
@@ -63,19 +48,55 @@ public class AnalyticsService {
         String bucketName = getBucket();
         String fileName = getFileName();
 
+        //check if bucket exists
         if(s3client.doesBucketExistV2(bucketName)){
-            GetObjectRequest getObject = new GetObjectRequest(getBucket(), fileName);
+            //if file exists for today, write to it
             if(s3client.doesObjectExist(bucketName, fileName)){
-                S3Object obj = s3client.getObject(getObject);
+                GetObjectRequest getObjectRequest = new GetObjectRequest(bucketName, fileName);
+                S3Object objectResponse = s3client.getObject(getObjectRequest);
+                BufferedReader reader = new BufferedReader(new InputStreamReader(objectResponse.getObjectContent()));
+                // Read the existing content and append the new line
+                String existingContent = reader.lines().collect(Collectors.joining("\n"));
+                String updatedContent = existingContent + "\n" + parkingLog.getRandomData();
+                PutObjectRequest putObject = new PutObjectRequest(bucketName, fileName, file);
+                PutObjectResult result = s3client.putObject(putObject, RequestBody.fromString(updatedContent));
             }else{
-//                PutObjectRequest putObject = new PutObjectRequest();
+                //if file does not exist, create and write
+                File file = new File(fileName);
+                try {
+                    file.createNewFile();
+                    try {
+                        FileWriter writer = new FileWriter(fileName, true);
+                        writer.write(parkingLog.getRandomData() + "\n");
+                        writer.close();
+                    } catch (IOException e) {
+                        System.err.println("Failed to append to the file: " + e.getMessage());
+                    }
+                } catch (IOException e) {
+                    response = "file creation failed at disk";
+                    return response;
+                }
+                PutObjectRequest putObject = new PutObjectRequest(bucketName, fileName, file);
+                PutObjectResult result = s3client.putObject(putObject);
+                System.out.println(result);
+                response = "file created";
             }
         }
-    return false;
+    return response;
     }
 
+    public String createTestFile(){
+        File file = new File(getFileName());
+        try {
+            return String.valueOf(file.createNewFile());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+
     private String getFileName() {
-        return "ankur_kothapet_" + getToday();
+        return "PilotVenue_" + getToday();
     }
 
     private String getBucket(){
@@ -83,15 +104,7 @@ public class AnalyticsService {
     }
 
     private String getToday(){
-        LocalDateTime now = LocalDateTime.now();
-
-        // Print the current date and time
-        System.out.println("Current Date and Time: " + now);
-
-        // If you want to print the date and time in a specific format
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
-        String formattedDateTime = now.format(formatter);
-        return formattedDateTime;
+        return LocalDateTime.now().format(formatter);
     }
 
     private String getAK(){
@@ -101,6 +114,4 @@ public class AnalyticsService {
     private String getSK(){
         return this.S3.split("//")[2];
     }
-
-
 }
