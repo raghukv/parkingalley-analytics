@@ -19,21 +19,16 @@ public class AnalyticsController {
     private int FAIL = 1;
 
     @GetMapping("/test")
-    public ResponseEntity<String> test(){
-        service.appendParkingLog(null);
-        return new ResponseEntity<>(HttpStatusCode.valueOf(200));
-    }
-
-    @GetMapping("/testcreate")
-    public ResponseEntity<String> testcreate(){
-        String s = service.createTestFile();
-        return new ResponseEntity<>(s, HttpStatusCode.valueOf(200));
+    public ResponseEntity<String> test() throws InterruptedException {
+        return new ResponseEntity<>("ready", HttpStatusCode.valueOf(200));
     }
 
     @PostMapping("/uploadParkingLog")
     public ResponseEntity<ResponseDetails> uploadParkingLog(@RequestBody ParkingLog parkingDetails) {
 
-        parkingDetails.setCaptured_time(System.currentTimeMillis());
+        long currTime = System.currentTimeMillis();
+        System.out.println("Request Received at: " + currTime);
+        parkingDetails.setCaptured_time(currTime);
 
         ResponseDetails responseDetails = new ResponseDetails(1, "");
 
@@ -41,5 +36,10 @@ public class AnalyticsController {
             service.appendParkingLog(parkingDetails);
         }
         return ResponseEntity.ok(responseDetails);
+    }
+
+    @GetMapping("/data")
+    public ResponseEntity<String> readData(){
+        return new ResponseEntity<>(service.readTodaysFile(), HttpStatusCode.valueOf(200));
     }
 }

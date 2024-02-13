@@ -30,6 +30,10 @@ public class ParkingLog {
         this.timeLen = timeLen;
     }
 
+    public ParkingLog(){
+
+    }
+
     public String buildRow(){
         StringBuilder s = new StringBuilder();
         s.append(pid).append(COMMA);
@@ -45,20 +49,20 @@ public class ParkingLog {
         return s.toString();
     }
 
-    public String getRandomData(){
-        Random random = new Random();
-        setPid(String.valueOf(random.nextInt()));
-        setSpace(String.valueOf(random.nextInt()));
-        setMap(String.valueOf(random.nextInt()));
-        setArea(String.valueOf(random.nextInt()));
-        setGarage(String.valueOf(random.nextInt()));
-        setPlate(String.valueOf(random.nextInt()));
-        setInTime(random.nextInt());
-        setOutTime(random.nextInt());
-        setTimeLen(random.nextInt());
-        setCaptured_time(System.currentTimeMillis());
-        return buildRow();
-    }
+//    public String getRandomData(){
+//        Random random = new Random(20);
+//        setPid(String.valueOf(random.nextInt()));
+//        setSpace(String.valueOf(random.nextInt()));
+//        setMap(String.valueOf(random.nextInt()));
+//        setArea(String.valueOf(random.nextInt()));
+//        setGarage(String.valueOf(random.nextInt()));
+//        setPlate(String.valueOf(random.nextInt()));
+//        setInTime(random.nextInt());
+//        setOutTime(random.nextInt());
+//        setTimeLen(random.nextInt());
+//        setCaptured_time(System.currentTimeMillis());
+//        return buildRow();
+//    }
 
 
     public String getSpace() {

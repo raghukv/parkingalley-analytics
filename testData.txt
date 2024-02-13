@@ -1,0 +1,11 @@
+{
+  "pid": "BBB",
+  "space": "125",
+  "map": "MainParkingMap",
+  "area": "ZoneA",
+  "garage": "Garage3",
+  "plate": "XYZ1234",
+  "inTime": 1615286400000,
+  "outTime": 1615293600000,
+  "timeLen": 120
+}
