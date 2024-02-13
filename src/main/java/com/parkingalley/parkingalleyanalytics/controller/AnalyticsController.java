@@ -40,6 +40,7 @@ public class AnalyticsController {
 
     @GetMapping("/data")
     public ResponseEntity<String> readData(){
+        System.out.println("reading today's data");
         return new ResponseEntity<>(service.readTodaysFile(), HttpStatusCode.valueOf(200));
     }
 }
