@@ -43,4 +43,10 @@ public class AnalyticsController {
         System.out.println("reading today's data");
         return new ResponseEntity<>(service.readTodaysFile(), HttpStatusCode.valueOf(200));
     }
+
+    @PostMapping("/rndm")
+    public ResponseEntity<ResponseDetails> rndmdata(){
+        service.rndm();
+        return ResponseEntity.ok(new ResponseDetails(1, ""));
+    }
 }

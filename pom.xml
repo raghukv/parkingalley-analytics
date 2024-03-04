@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>com.parkingalley</groupId>
 	<artifactId>parkingalley-analytics</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>1.0.0</version>
 	<name>parkingalley-analytics</name>
 	<description>API to ingest data for analytics</description>
 	<properties>

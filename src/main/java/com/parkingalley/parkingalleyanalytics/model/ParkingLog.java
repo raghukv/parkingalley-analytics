@@ -1,6 +1,5 @@
 package com.parkingalley.parkingalleyanalytics.model;
 
-import java.util.Calendar;
 import java.util.Random;
 
 public class ParkingLog {
@@ -49,20 +48,20 @@ public class ParkingLog {
         return s.toString();
     }
 
-//    public String getRandomData(){
-//        Random random = new Random(20);
-//        setPid(String.valueOf(random.nextInt()));
-//        setSpace(String.valueOf(random.nextInt()));
-//        setMap(String.valueOf(random.nextInt()));
-//        setArea(String.valueOf(random.nextInt()));
-//        setGarage(String.valueOf(random.nextInt()));
-//        setPlate(String.valueOf(random.nextInt()));
-//        setInTime(random.nextInt());
-//        setOutTime(random.nextInt());
-//        setTimeLen(random.nextInt());
-//        setCaptured_time(System.currentTimeMillis());
-//        return buildRow();
-//    }
+    public ParkingLog rndm(){
+        Random random = new Random(20);
+        setPid(String.valueOf(random.nextInt()));
+        setSpace(String.valueOf(random.nextInt()));
+        setMap(String.valueOf(random.nextInt()));
+        setArea(String.valueOf(random.nextInt()));
+        setGarage(String.valueOf(random.nextInt()));
+        setPlate(String.valueOf(random.nextInt()));
+        setInTime(random.nextInt());
+        setOutTime(random.nextInt());
+        setTimeLen(random.nextInt());
+        setCaptured_time(System.currentTimeMillis());
+        return this;
+    }
 
 
     public String getSpace() {

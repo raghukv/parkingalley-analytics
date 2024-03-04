@@ -73,6 +73,11 @@ public class AnalyticsService {
         return response;
     }
 
+    public String rndm(){
+        ParkingLog log = new ParkingLog();
+        return appendParkingLog(log.rndm());
+    }
+
     public String readTodaysFile(){
         AmazonS3 s3client = getS3Client();
         String bucketName = S3_BUCKET;
