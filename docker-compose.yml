@@ -1,0 +1,12 @@
+version: '3.8'
+services:
+  parkingalley-analytics:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: parkingalley-analytics:1.0.0
+    container_name: parkingalley-analytics-container
+    ports:
+      - "8080:8080" # Assuming your application runs on port 8080, adjust if necessary
+    environment:
+      - JAVA_OPTS= # If you have Java options to pass, they can go here
